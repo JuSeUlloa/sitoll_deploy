@@ -21,32 +21,32 @@ const generarTokenControlador_1 = __importDefault(require("../../shared/controll
 class RegistroDao {
     static nuevoUsuario(res, objUsuario, objAcceso) {
         return __awaiter(this, void 0, void 0, function* () {
-            const accesoRepository = conexionBD_1.default.getRepository(acceso_1.Acceso);
-            const usuairoRepository = conexionBD_1.default.getRepository(usuario_1.default);
+            let accesoRepository = conexionBD_1.default.getRepository(acceso_1.Acceso);
+            let usuarioRepository = conexionBD_1.default.getRepository(usuario_1.default);
             let accion = 1, codUsuario = 0;
             const usuarioAcceso = yield accesoRepository.findBy({ nombreAcceso: objAcceso.nombreAcceso });
             if (usuarioAcceso.length == 0) {
-                codUsuario = ((yield usuairoRepository.insert(objUsuario)).identifiers[0].codUsuario);
-                const cifrada = bcryptjs_1.default.hashSync(objAcceso.claveAcceso);
-                objAcceso.codUsuario = codUsuario;
-                objAcceso.claveAcceso = cifrada;
-                yield accesoRepository.insert(objAcceso);
                 accion = 2;
+                codUsuario = (yield usuarioRepository.insert(objUsuario)).identifiers[0].codUsuario;
+                let claveCifrada = bcryptjs_1.default.hashSync(objAcceso.claveAcceso);
+                objAcceso.codUsuario = codUsuario;
+                objAcceso.claveAcceso = claveCifrada;
+                yield accesoRepository.insert(objAcceso);
             }
-            console.log(codUsuario);
-            usuairoRepository.query(usuario_sql_1.SQL_REGISTRO.DATOS, [codUsuario]).then((respuesta) => {
+            yield usuarioRepository.query(usuario_sql_1.SQL_REGISTRO.DATOS, [objAcceso.nombreAcceso])
+                .then((respuesta) => {
                 console.log(respuesta);
                 switch (accion) {
                     case 1:
-                        res.status(400).json({ mensaje: "nombre de Acceso ya existe" });
+                        res.status(400).json({ mensaje: "Fallo el Usuario ya existe" });
                         break;
                     case 2:
                         const token = generarTokenControlador_1.default.procesarRespuesta(respuesta[0]);
                         res.status(200).json({ tokenApp: token });
                         break;
                 }
-            }).catch((err) => {
-                res.status(400).json({ mensaje: "Error to Register User" });
+            }).catch((miErrorsito) => {
+                res.status(400).json({ mensaje: "Fallo al registrar el usuario" });
             });
         });
     }
