@@ -28,7 +28,7 @@ const poolConection = new typeorm_1.DataSource({
     password: password,
     database: database,
     synchronize: true,
-    entities: ['build/model/**/*.js'],
+    entities: ['model/**/*.js'],
     logging: true,
     namingStrategy: new SnakeNamingStrategy(),
     ssl: {
