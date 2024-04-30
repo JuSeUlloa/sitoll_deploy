@@ -28,7 +28,7 @@ const poolConection = new typeorm_1.DataSource({
     password: password,
     database: database,
     synchronize: true,
-    entities: [departamento_1.default, ruta_1.default, departamentoRuta_1.default, acceso_1.Acceso, usuario_1.default, peaje_1.default],
+    entities: ['build/model/**/*.js'],
     logging: true,
     namingStrategy: new SnakeNamingStrategy(),
     ssl: {
